@@ -29,9 +29,8 @@
 #include <openssl/opensslv.h>
 #include <openssl/bio.h>
 #include <openssl/pem.h>
-#if !defined(OPENSSL_NO_ENGINE) && (!defined(OPENSSL_VERSION_MAJOR) || OPENSSL_VERSION_MAJOR < 4)
+#if !defined(OPENSSL_NO_ENGINE)
 #include <openssl/engine.h>
-#define PICOTLS_HAVE_ENGINE 1
 #endif
 #if !defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x30000000L
 #include <openssl/provider.h>
@@ -388,7 +387,7 @@ Exit:
 
 #if ASYNC_TESTS
 
-#if defined(PICOTLS_HAVE_ENGINE)
+#if !defined(OPENSSL_NO_ENGINE)
 static ENGINE *load_engine(const char *name)
 {
     ENGINE *e;
@@ -550,7 +549,7 @@ int main(int argc, char **argv)
     /* Explicitly load the legacy provider in addition to default, as we test Blowfish in one of the tests. */
     OSSL_PROVIDER *legacy = OSSL_PROVIDER_load(NULL, "legacy");
     OSSL_PROVIDER *dflt = OSSL_PROVIDER_load(NULL, "default");
-#elif defined(PICOTLS_HAVE_ENGINE)
+#elif !defined(OPENSSL_NO_ENGINE)
     /* Load all compiled-in ENGINEs */
     ENGINE_load_builtin_engines();
     ENGINE_register_all_ciphers();
@@ -644,7 +643,7 @@ int main(int argc, char **argv)
     subtest("many-handshakes-non-async", many_handshakes);
     openssl_sign_certificate.async = 0;
     subtest("many-handshakes-async", many_handshakes);
-#if defined(PICOTLS_HAVE_ENGINE)
+#if !defined(OPENSSL_NO_ENGINE)
     { /* qatengine should be tested at last, because we do not have the code to unload or un-default it */
         const char *engine_name = "qatengine";
         ENGINE *qatengine;
