@@ -28,7 +28,11 @@ jobs:
           - name: "Ubuntu / boringssl"
             command: make -f misc/docker-ci.mk CONTAINER_NAME=h2oserver/h2o-ci:ubuntu2204 CMAKE_ARGS='-DOPENSSL_ROOT_DIR=/opt/boringssl'
           - name: "CentOS Stream / OpenSSL wo. ENGINE API"
-            command: make -f misc/docker-ci.mk CONTAINER_NAME=h2oserver/h2o-ci:centosstream10
+            command: |
+              sudo aa-status || true
+              sudo aa-teardown || true
+              sudo aa-status || true
+              make -f misc/docker-ci.mk CONTAINER_NAME=h2oserver/h2o-ci:centosstream10
 
     timeout-minutes: 20
     steps:
