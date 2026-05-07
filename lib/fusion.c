@@ -1138,8 +1138,10 @@ void aead_do_encrypt(struct st_ptls_aead_context_t *_ctx, void *output, const vo
 {
     struct aesgcm_context *ctx = (void *)_ctx;
 
-    if (inlen + aadlen > ctx->aesgcm->capacity)
+    if (inlen + aadlen > ctx->aesgcm->capacity) {
         ctx->aesgcm = ptls_fusion_aesgcm_set_capacity(ctx->aesgcm, inlen + aadlen);
+        assert(ctx->aesgcm != NULL && "fusion assumes sufficient amount of memory to be available");
+    }
     ptls_fusion_aesgcm_encrypt(ctx->aesgcm, output, input, inlen, calc_counter(ctx, seq), aad, aadlen, supp);
 }
 
@@ -1158,8 +1160,10 @@ static size_t aead_do_decrypt(ptls_aead_context_t *_ctx, void *output, const voi
         return SIZE_MAX;
 
     size_t enclen = inlen - 16;
-    if (enclen + aadlen > ctx->aesgcm->capacity)
+    if (enclen + aadlen > ctx->aesgcm->capacity) {
         ctx->aesgcm = ptls_fusion_aesgcm_set_capacity(ctx->aesgcm, enclen + aadlen);
+        assert(ctx->aesgcm != NULL && "fusion assumes sufficient amount of memory to be available");
+    }
     if (!ptls_fusion_aesgcm_decrypt(ctx->aesgcm, output, input, enclen, calc_counter(ctx, seq), aad, aadlen,
                                     (const uint8_t *)input + enclen))
         return SIZE_MAX;
