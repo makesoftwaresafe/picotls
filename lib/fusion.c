@@ -1203,7 +1203,7 @@ static int aesgcm_setup(ptls_aead_context_t *_ctx, int is_enc, const void *key, 
 
     ctx->aesgcm = new_aesgcm(key, key_size, 1500 /* assume ordinary packet size */, 0 /* no support for aesni256 yet */);
     if (ctx->aesgcm == NULL)
-        return PTLS_ERROR_NO_MEMORY;
+        abort();
     return 0;
 }
 
@@ -2140,7 +2140,7 @@ static int non_temporal_setup(ptls_aead_context_t *_ctx, int is_enc, const void 
                    7 * (ptls_fusion_can_aesni256 ? 32 : 16), // 6 blocks at once, plus len(A) | len(C) that we might append
                    aesni256);
     if (ctx->aesgcm == NULL)
-       return PTLS_ERROR_NO_MEMORY;
+       abort();
     return 0;
 }
 
